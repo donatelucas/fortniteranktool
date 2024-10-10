@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Reveal Image</title>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            margin: 0;
+            padding: 20px;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        .image-container {
+            width: 100%;
+            max-width: 600px;
+            position: relative;
+            overflow: hidden;
+            margin: 0 auto;
+        }
+
+        .bw-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            filter: grayscale(100%);
+            position: relative;
+            z-index: 1;
+        }
+
+        .color-overlay {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            bottom: 0;
+            transition: clip-path 0.3s ease;
+            z-index: 2;
+            clip-path: inset(100% 0 0 0);
+        }
+
+        .color-image {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .controls {
+            margin-top: 20px;
+        }
+
+        .progress-container {
+            width: 100%;
+            max-width: 600px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            margin: 10px auto 0;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 60px;
+            background-color: #76c7c0;
+            width: 0;
+            border-radius: 5px;
+            transition: width 0.3s ease;
+        }
+
+        .percentage-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: black;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .selection-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .selection-box {
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .selection-box label {
+            margin-top: 5px;
+            font-size: 14px;
+        }
+
+        .selection-checkbox {
+            width: 20px;
+            height: 20px;
+            background-color: #333;
+            border: 2px solid #76c7c0;
+            border-radius: 3px;
+        }
+
+        .selection-checkbox.selected {
+            background-color: #76c7c0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="image-container">
+    <img src="W:/Streaming/Editing Images/Ranked Badges/Unreal.png" alt="Black and White Image" class="bw-image" id="mainImage">
+    <div class="color-overlay" id="colorOverlay">
+        <img src="W:/Streaming/Editing Images/Ranked Badges/Unreal.png" alt="Color Image" class="color-image">
+    </div>
+</div>
+
+<div class="progress-container">
+    <div class="progress-bar" id="progressBar"></div>
+    <div class="percentage-text" id="percentageText">0%</div>
+</div>
+
+<div class="controls">
+    <label for="rankPercentage">Rank Percentage (0-100):</label>
+    <input type="number" id="rankPercentage" min="0" max="100" value="0">
+    <button onclick="updateColorReveal()">Update</button>
+</div>
+
+<div class="selection-container">
+    <div class="selection-box" onclick="selectImage('Bronze')">
+        <div class="selection-checkbox" id="BronzeCheckbox"></div>
+        <label>Bronze</label>
+    </div>
+    <div class="selection-box" onclick="selectImage('Silver')">
+        <div class="selection-checkbox" id="SilverCheckbox"></div>
+        <label>Silver</label>
+    </div>
+    <div class="selection-box" onclick="selectImage('Gold')">
+        <div class="selection-checkbox" id="GoldCheckbox"></div>
+        <label>Gold</label>
+    </div>
+    <div class="selection-box" onclick="selectImage('Platinum')">
+        <div class="selection-checkbox" id="PlatinumCheckbox"></div>
+        <label>Platinum</label>
+    </div>
+    <div class="selection-box" onclick="selectImage('Diamond')">
+        <div class="selection-checkbox" id="DiamondCheckbox"></div>
+        <label>Diamond</label>
+    </div>
+    <div class="selection-box" onclick="selectImage('Elite')">
+        <div class="selection-checkbox" id="EliteCheckbox"></div>
+        <label>Elite</label>
+    </div>
+    <div class="selection-box" onclick="selectImage('Champion')">
+        <div class="selection-checkbox" id="ChampionCheckbox"></div>
+        <label>Champion</label>
+    </div>
+    <div class="selection-box" onclick="selectImage('Unreal')">
+        <div class="selection-checkbox selected" id="UnrealCheckbox"></div>
+        <label>Unreal</label>
+    </div>
+</div>
+
+<script>
+    const imagePaths = {
+        Bronze: "W:/Streaming/Editing Images/Ranked Badges/Bronze.png",
+        Silver: "W:/Streaming/Editing Images/Ranked Badges/Silver.png",
+        Gold: "W:/Streaming/Editing Images/Ranked Badges/Gold.png",
+        Platinum: "W:/Streaming/Editing Images/Ranked Badges/Platinum.png",
+        Diamond: "W:/Streaming/Editing Images/Ranked Badges/Diamond.png",
+        Elite: "W:/Streaming/Editing Images/Ranked Badges/Elite.png",
+        Champion: "W:/Streaming/Editing Images/Ranked Badges/Champion.png",
+        Unreal: "W:/Streaming/Editing Images/Ranked Badges/Unreal.png"
+    };
+
+    function updateColorReveal() {
+        const rankPercentage = document.getElementById('rankPercentage').value;
+        if (rankPercentage < 0 || rankPercentage > 100) {
+            alert("Please enter a value between 0 and 100.");
+            return;
+        }
+
+        const colorOverlay = document.getElementById('colorOverlay');
+        colorOverlay.style.clipPath = `inset(${100 - rankPercentage}% 0 0 0)`;
+
+        const progressBar = document.getElementById('progressBar');
+        progressBar.style.width = `${rankPercentage}%`;
+
+        const percentageText = document.getElementById('percentageText');
+        percentageText.textContent = `${rankPercentage}%`;
+    }
+
+    function selectImage(imageName) {
+        // Update image source
+        const mainImage = document.getElementById('mainImage');
+        mainImage.src = imagePaths[imageName];
+        const colorOverlayImage = document.getElementById('colorOverlay').querySelector("img");
+        colorOverlayImage.src = imagePaths[imageName];
+
+        // Clear all selections
+        document.querySelectorAll(".selection-checkbox").forEach(box => {
+            box.classList.remove("selected");
+        });
+
+        // Highlight the selected box
+        document.getElementById(`${imageName}Checkbox`).classList.add("selected");
+    }
+</script>
+
+</body>
+</html>
